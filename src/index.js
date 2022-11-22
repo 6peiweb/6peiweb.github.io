@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
+import { RouterProvider, Link, createHashRouter } from 'react-router-dom';
 
 import KLine from './pages/k-line';
 import LongRoll from './pages/long-roll';
 
 import './index.css';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <div style={{ padding: 16, display: 'flex', flexDirection: 'column' }}>
