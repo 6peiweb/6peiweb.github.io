@@ -1,0 +1,29 @@
+.App {
+  padding: 16px;
+}
+
+.origin-input-wrapper {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.origin-input-item {
+  max-width: 300px !important;
+}
+
+.origin-input-item:not(:first-child) {
+  margin-left: 16px;
+}
+
+.action-wrapper {
+  display: flex;
+  margin-bottom: 24px;
+}
+
+.action-input-item {
+  max-width: 180px !important;
+}
+
+.action-input-item:not(:first-child) {
+  margin-left: 16px;
+}

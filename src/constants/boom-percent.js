@@ -1,0 +1,1 @@
+export const BOOM_PERCENT = 0.98;

@@ -1,17 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
+
+import KLine from './pages/k-line';
+import LongRoll from './pages/long-roll';
+
+import './index.css';
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <div style={{ padding: 16, display: 'flex', flexDirection: 'column ` `' }}>
+      <Link to="/long-roll">多头滚仓策略</Link>
+      <Link to="/k-line">K线</Link>
+    </div>,
+  },
+  {
+    path: '/long-roll',
+    element: <LongRoll />,
+  },
+  {
+    path: '/k-line',
+    element: <KLine />,
+  },
+]);
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

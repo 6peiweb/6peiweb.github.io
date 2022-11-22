@@ -1,0 +1,73 @@
+.k-line-wrapper {
+  height: 100vh;
+  display: flex;
+  width: 100vw;
+  position: fixed;
+}
+
+.k-line-canvas {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex: 1;
+  position: relative;
+}
+
+.price-wrapper {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 9999;
+  color: #fff;
+}
+
+.price-wrapper {
+  display: grid;
+}
+
+.settings-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  padding: 8px 16px;
+}
+
+.settings-form-row {
+  display: flex;
+  align-items: center;
+}
+
+.settings-wrapper-top, .settings-wrapper-bottom {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-wrapper-bottom {
+  border-top: 1px solid #eee;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.settings-wrapper-top .settings-form-row:not(:first-child) {
+  margin-top: 16px;
+}
+
+.settings-wrapper-bottom .settings-form-row:not(:last-child) {
+  margin-bottom: 16px;
+}
+
+.settings-form-row>.settings-form-row-label {
+  font-size: 14px;
+  min-width: 76px;
+}
+
+.settings-form-row>.settings-form-row-content {
+  min-width: 200px;
+}
+
+.settings-form-row>.settings-form-row-content.settings-form-row-content-switch {
+  min-width: 0px !important;
+}
