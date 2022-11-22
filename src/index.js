@@ -11,7 +11,7 @@ import './index.css';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div style={{ padding: 16, display: 'flex', flexDirection: 'column ` `' }}>
+    element: <div style={{ padding: 16, display: 'flex', flexDirection: 'column' }}>
       <Link to="/long-roll">多头滚仓策略</Link>
       <Link to="/k-line">K线</Link>
     </div>,

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 
-import { Select, Switch, DatePicker, ConfigProvider, Button } from 'antd';
+import { Select, Switch, DatePicker, ConfigProvider, Button, message } from 'antd';
 import { createChart } from 'lightweight-charts';
 import locale from 'antd/locale/zh_CN';
 import 'dayjs/locale/zh-cn';
@@ -24,15 +24,16 @@ export default function KLine() {
   const histogramSeriesRef = useRef();
   const candlestickSeriesRef = useRef();
   const datafeeds = useRef([]);
-  const [limit, setLimit] = useState(1000);
+  const [limit, setLimit] = useState(Number(localStorage.getItem('limit') || 100));
   const [beforeTime, setBeforeTime] = useState({ time: 0, loading: true });
   const [afterTime, setAfterTime] = useState({ time: 0, loading: true });
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
   const [volumeVisible, setVolumeVisible] = useState(true);
-  const [interval, setInterval] = useState('4h');
-  const [symbol, setSymbol] = useState('BTCUSDT');
+  const [interval, setCurInterval] = useState(localStorage.getItem('interval') || '4h');
+  const [symbol, setSymbol] = useState(localStorage.getItem('symbol') || 'BTCUSDT');
   const [symbols, setSymbols] = useState([]);
   const [crosshairMoveData, setCrosshairMoveData] = useState();
 
@@ -158,6 +159,18 @@ export default function KLine() {
         limit: params ? params.limit : 1000,
       }),
     }).then(res => {
+      if (!res.length) {
+        messageApi.info('没有更多数据');
+        setBeforeTime(res => ({
+          ...res,
+          loading: false,
+        }));
+        setAfterTime(res => ({
+          ...res,
+          loading: false,
+        }));
+        return;
+      }
       setBeforeTime({
         time: res[0].time,
         loading: false,
@@ -203,57 +216,68 @@ export default function KLine() {
     }
   }
 
-  return <div className="k-line-wrapper" ref={wrapperRef}>
-    <div className="k-line-canvas" ref={kLineCanvasRef}>
-      {crosshairMoveData && <div className="price-wrapper" style={{ color: getLineColor(crosshairMoveData) }}>
-        <div className="price-item">开盘价：{fixed2Dot(crosshairMoveData.open)}</div>
-        <div className="price-item">收盘价：{fixed2Dot(crosshairMoveData.close)}</div>
-        <div className="price-item">最高价：{fixed2Dot(crosshairMoveData.high)}</div>
-        <div className="price-item">最低价：{fixed2Dot(crosshairMoveData.low)}</div>
-      </div>}
-    </div>
-    <div className="settings-wrapper" style={{ width: SETTING_WIDTH }}>
-      <div className="settings-wrapper-top">
-        <div className="settings-form-row">
-          <div className="settings-form-row-label">交易对：</div>
-          <Select className="settings-form-row-content" showSearch defaultValue={symbol} options={symbols} onChange={setSymbol} />
-        </div>
-        <div className="settings-form-row">
-          <div className="settings-form-row-label">时间周期：</div>
-          <Select className="settings-form-row-content" defaultValue={interval} options={intervals} onChange={setInterval} />
-        </div>
-        <div className="settings-form-row">
-          <div className="settings-form-row-label">交易量：</div>
-          <Switch className="settings-form-row-content settings-form-row-content-switch" defaultChecked={volumeVisible} onChange={setVolumeVisible} />
-        </div>
-        <div className="settings-form-row">
-          <div className="settings-form-row-label">开始时间：</div>
-          <ConfigProvider locale={locale}>
-            <DatePicker showTime className="settings-form-row-content" onChange={e => setStartTime(e.valueOf())} />
-          </ConfigProvider>
-        </div>
-        <div className="settings-form-row">
-          <div className="settings-form-row-label">结束时间：</div>
-          <ConfigProvider locale={locale}>
-            <DatePicker showTime className="settings-form-row-content" onChange={e => setEndTime(e.valueOf())} />
-          </ConfigProvider>
-        </div>
-      </div>
-      <div className="settings-wrapper-bottom">
-        {interval !== '1M' && <div className="settings-form-row">
-          <div className="settings-form-row-label">加载K数：</div>
-          <Select className="settings-form-row-content" defaultValue={limit} options={limits} onChange={setLimit} />
+  return (<>
+    {contextHolder}
+    <div className="k-line-wrapper" ref={wrapperRef}>
+      <div className="k-line-canvas" ref={kLineCanvasRef}>
+        {crosshairMoveData && <div className="price-wrapper" style={{ color: getLineColor(crosshairMoveData) }}>
+          <div className="price-item">开盘价：{fixed2Dot(crosshairMoveData.open)}</div>
+          <div className="price-item">收盘价：{fixed2Dot(crosshairMoveData.close)}</div>
+          <div className="price-item">最高价：{fixed2Dot(crosshairMoveData.high)}</div>
+          <div className="price-item">最低价：{fixed2Dot(crosshairMoveData.low)}</div>
         </div>}
-        <div className="settings-form-row">
-          <Button type="primary" loading={beforeTime.loading} onClick={() => loadMoreKLine('before')}>往前加载</Button>
+      </div>
+      <div className="settings-wrapper" style={{ width: SETTING_WIDTH }}>
+        <div className="settings-wrapper-top">
+          <div className="settings-form-row">
+            <div className="settings-form-row-label">交易对：</div>
+            <Select className="settings-form-row-content" showSearch defaultValue={symbol} options={symbols} onChange={value => {
+              localStorage.setItem('symbol', value);
+              setSymbol(value);
+            }} />
+          </div>
+          <div className="settings-form-row">
+            <div className="settings-form-row-label">时间周期：</div>
+            <Select className="settings-form-row-content" defaultValue={interval} options={intervals} onChange={value => {
+              localStorage.setItem('interval', value);
+              setCurInterval(value);
+            }} />
+          </div>
+          <div className="settings-form-row">
+            <div className="settings-form-row-label">交易量：</div>
+            <Switch className="settings-form-row-content settings-form-row-content-switch" defaultChecked={volumeVisible} onChange={setVolumeVisible} />
+          </div>
+          <div className="settings-form-row">
+            <div className="settings-form-row-label">开始时间：</div>
+            <ConfigProvider locale={locale}>
+              <DatePicker showTime className="settings-form-row-content" onChange={e => setStartTime(e.valueOf())} />
+            </ConfigProvider>
+          </div>
+          <div className="settings-form-row">
+            <div className="settings-form-row-label">结束时间：</div>
+            <ConfigProvider locale={locale}>
+              <DatePicker showTime className="settings-form-row-content" onChange={e => setEndTime(e.valueOf())} />
+            </ConfigProvider>
+          </div>
         </div>
-        <div className="settings-form-row">
-          <Button type="primary" loading={afterTime.loading} onClick={() => loadMoreKLine('after')}>往后加载</Button>
-        </div>
-        <div className="settings-form-row">
-          <Button type="primary" onClick={() => chartRef.current?.timeScale().fitContent()}>重置坐标</Button>
+        <div className="settings-wrapper-bottom">
+          {interval !== '1M' && <div className="settings-form-row">
+            <div className="settings-form-row-label">加载K数：</div>
+            <Select className="settings-form-row-content" defaultValue={limit} options={limits} onChange={value => {
+              localStorage.setItem('limit', String(value));
+              setLimit(value);
+            }} />
+          </div>}
+          <div className="settings-form-row">
+            <Button type="primary" loading={beforeTime.loading} onClick={() => loadMoreKLine('before')}>往前加载</Button>
+          </div>
+          <div className="settings-form-row">
+            <Button type="primary" loading={afterTime.loading} onClick={() => loadMoreKLine('after')}>往后加载</Button>
+          </div>
+          <div className="settings-form-row">
+            <Button type="primary" onClick={() => chartRef.current?.timeScale().fitContent()}>重置坐标</Button>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    </div></>)
 }
