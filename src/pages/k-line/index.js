@@ -66,6 +66,12 @@ export default function KLine() {
             bottom: 0.25,
           },
         },
+        leftPriceScale: {
+          scaleMargins: {
+            top: 0.25,
+            bottom: 0.25,
+          },
+        },
         timeScale: {
           visible: true,
           rightOffset: 6,
@@ -129,7 +135,7 @@ export default function KLine() {
         },
         overlay: true,
         scaleMargins: {
-          top: 0.9,
+          top: 0.95,
           bottom: 0,
         },
       });
