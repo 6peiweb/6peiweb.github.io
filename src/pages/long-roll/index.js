@@ -31,7 +31,7 @@ function LongRoll() {
         totalEarn: 0,
       },
     ]);
-  }, [principal, originPrice, originLevel])
+  }, [principal, originPrice, originLevel]);
 
   const onAddCount = () => {
     const newPrice = fixed2Dot(addPrice.current);
@@ -114,7 +114,11 @@ function LongRoll() {
         <Input className="origin-input-item" type="number" addonBefore="杠杆倍数" defaultValue={originLevel} onChange={e => setOriginLevel(Number(e.target.value))} />
       </div>
       <div className="action-wrapper">
-        <Input className="action-input-item" type="number" addonBefore="价格" addonAfter="$" defaultValue={originPrice} onChange={e => addPrice.current = Number(e.target.value)} />
+        <Input className="action-input-item" type="number" addonBefore="价格" addonAfter="$" defaultValue={originPrice} onChange={e => addPrice.current = Number(e.target.value)} onKeyPress={e => {
+          if (e.code === 'Enter') {
+            onAddCount();
+          }
+        }} />
         <Button type="primary" className="action-input-item" onClick={onAddCount}>加仓</Button>
       </div>
       <Table columns={columns} dataSource={data} pagination={false} />
